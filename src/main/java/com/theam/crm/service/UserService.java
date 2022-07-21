@@ -30,7 +30,7 @@ public class UserService {
 
     private final RoleRepository roleRepository;
 
-    private static final String ROLE_NOT_FOUND = "Error: Role is not found.";
+    private static final String ROLE_NOT_FOUND_ERROR = "Error: Role is not found.";
 
     public List<UserResponse> getAllUsers() {
         return userRepository.findAll().stream().map(UserResponse::toUserResponse).collect(Collectors.toList());
@@ -80,17 +80,17 @@ public class UserService {
 
         if (strRoles == null) {
             Role userRole = roleRepository.findByName(RoleDescription.ROLE_USER)
-                    .orElseThrow(() -> new RuntimeException(ROLE_NOT_FOUND));
+                    .orElseThrow(() -> new RuntimeException(ROLE_NOT_FOUND_ERROR));
             roles.add(userRole);
         } else {
             strRoles.forEach(role -> {
                 if ("admin".equals(role)) {
                     Role adminRole = roleRepository.findByName(RoleDescription.ROLE_ADMIN)
-                            .orElseThrow(() -> new RuntimeException(ROLE_NOT_FOUND));
+                            .orElseThrow(() -> new RuntimeException(ROLE_NOT_FOUND_ERROR));
                     roles.add(adminRole);
                 } else {
                     Role userRole = roleRepository.findByName(RoleDescription.ROLE_USER)
-                            .orElseThrow(() -> new RuntimeException(ROLE_NOT_FOUND));
+                            .orElseThrow(() -> new RuntimeException(ROLE_NOT_FOUND_ERROR));
                     roles.add(userRole);
                 }
             });
