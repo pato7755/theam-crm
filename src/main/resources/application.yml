@@ -1,0 +1,6 @@
+# AWS S3 properties
+amazonProperties:
+  endpointUrl: https://s3.us-east-1.amazonaws.com
+  accessKey: AKIAR3QHRHNG56H2GEDB
+  secretKey: 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
+  bucketName: theam-customer-photos
