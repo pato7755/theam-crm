@@ -13,6 +13,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
@@ -39,7 +40,7 @@ public class CustomerController {
     }
 
     @PostMapping
-    public ResponseEntity<CustomerResponse> createCustomer(@Validated @RequestParam("firstName") @NotEmpty String firstName,
+    public ResponseEntity<CustomerResponse> createCustomer(@Valid @RequestParam("firstName") @NotEmpty String firstName,
                                                            @RequestParam("lastName") @NotEmpty String lastName,
                                                            @RequestParam("email") @NotEmpty String email,
                                                            @RequestPart(value = "file") MultipartFile file) {
