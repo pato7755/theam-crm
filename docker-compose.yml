@@ -1,0 +1,23 @@
+version: "3.7"
+services:
+  app:
+    build: .
+    restart: always
+    ports:
+      - 5000:5000
+    depends_on:
+      - postgres_db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres_db:5432/testdb
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=pass1234
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+  postgres_db:
+    image: postgres
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_DB: testdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: pass1234
