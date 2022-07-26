@@ -3,7 +3,6 @@ package com.theam.crm.service;
 import com.theam.crm.exceptions.UserNotFoundException;
 import com.theam.crm.exceptions.UsernameAlreadyExistsException;
 import com.theam.crm.model.Role;
-import com.theam.crm.model.RoleDescription;
 import com.theam.crm.model.User;
 import com.theam.crm.payload.request.SignupRequest;
 import com.theam.crm.payload.request.UpdateUserRequest;
@@ -13,12 +12,16 @@ import com.theam.crm.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static com.theam.crm.model.RoleDescription.ROLE_ADMIN;
+import static com.theam.crm.model.RoleDescription.ROLE_USER;
 
 @Service
 @RequiredArgsConstructor
@@ -36,16 +39,26 @@ public class UserService {
         return userRepository.findAll().stream().map(UserResponse::toUserResponse).collect(Collectors.toList());
     }
 
+    @Transactional
+    public int getAdminUserCount() {
+        List<User> users = userRepository.findAll();
+        int count = 0;
+        for (User user : users) {
+            if (user.getRoles().stream().anyMatch(role -> role.getName().equals(ROLE_ADMIN))) {
+                count++;
+            }
+        }
+        return count;
+    }
+
     public UserResponse createUser(SignupRequest signUpRequest) {
 
-        // Create new user's account
         User user = new User(signUpRequest.getUsername(),
-                passwordEncoder.encode(signUpRequest.getPassword()));
+                passwordEncoder.encode(signUpRequest.getPassword()),
+                signUpRequest.getEmail());
 
         Set<String> strRoles = signUpRequest.getRole();
-
         user.setRoles(getRoleFromRequest(strRoles));
-
         return UserResponse.toUserResponse(userRepository.save(user));
     }
 
@@ -79,22 +92,26 @@ public class UserService {
         Set<Role> roles = new HashSet<>();
 
         if (strRoles == null) {
-            Role userRole = roleRepository.findByName(RoleDescription.ROLE_USER)
+            Role userRole = roleRepository.findByName(ROLE_USER)
                     .orElseThrow(() -> new RuntimeException(ROLE_NOT_FOUND_ERROR));
             roles.add(userRole);
         } else {
             strRoles.forEach(role -> {
                 if ("admin".equals(role)) {
-                    Role adminRole = roleRepository.findByName(RoleDescription.ROLE_ADMIN)
+                    Role adminRole = roleRepository.findByName(ROLE_ADMIN)
                             .orElseThrow(() -> new RuntimeException(ROLE_NOT_FOUND_ERROR));
                     roles.add(adminRole);
                 } else {
-                    Role userRole = roleRepository.findByName(RoleDescription.ROLE_USER)
+                    Role userRole = roleRepository.findByName(ROLE_USER)
                             .orElseThrow(() -> new RuntimeException(ROLE_NOT_FOUND_ERROR));
                     roles.add(userRole);
                 }
             });
         }
+        roles.stream().forEach(role -> {
+                    System.out.println("role: " + role.getName());
+                }
+        );
         return roles;
     }
 
