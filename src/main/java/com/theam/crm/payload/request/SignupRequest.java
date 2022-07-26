@@ -1,11 +1,17 @@
 package com.theam.crm.payload.request;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.Set;
 
-
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class SignupRequest {
     @NotBlank
     @Size(min = 3, max = 20)
@@ -27,6 +33,14 @@ public class SignupRequest {
         this.password = password;
         this.email = email;
     }
+
+//    public SignupRequest(@NotBlank @Size(min = 3, max = 20) String username, @NotBlank @Size(min = 6, max = 40) String password, @NotBlank @Size(max = 50) @Email String email, Set<String> role) {
+//        this.username = username;
+//        this.password = password;
+//        this.email = email;
+//        this.role = role;
+//    }
+
 
     public String getUsername() {
         return username;
