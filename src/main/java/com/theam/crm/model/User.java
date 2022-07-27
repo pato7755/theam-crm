@@ -1,5 +1,7 @@
 package com.theam.crm.model;
 
+import com.theam.crm.model.audit.AuditMetadata;
+
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -12,7 +14,7 @@ import java.util.Set;
         uniqueConstraints = {
                 @UniqueConstraint(columnNames = "username")
         })
-public class User {
+public class User extends AuditMetadata {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
