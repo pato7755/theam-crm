@@ -1,6 +1,7 @@
 package com.theam.crm.service;
 
 import com.theam.crm.config.AmazonClient;
+import com.theam.crm.config.service.MinioService;
 import com.theam.crm.exceptions.CustomerNotFoundException;
 import com.theam.crm.model.Customer;
 import com.theam.crm.payload.request.CustomerRequest;
@@ -23,6 +24,8 @@ public class CustomerService {
 
     private final AmazonClient amazonClient;
 
+    private final MinioService minioService;
+
     public List<CustomerResponse> getAllCustomers() {
         return customerRepository.findAll().stream().map(CustomerResponse::toCustomerResponse).collect(Collectors.toList());
     }
@@ -36,7 +39,8 @@ public class CustomerService {
 
     public CustomerResponse createCustomer(CustomerRequest customerRequest, MultipartFile multipartFile) {
 
-        String photoId = amazonClient.uploadFile(multipartFile);
+//        String photoId = amazonClient.uploadFile(multipartFile);
+        String photoId = minioService.uploadFile(multipartFile);
 
         Customer customer = new Customer(customerRequest.getFirstName(),
                 customerRequest.getLastName(),
