@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -66,9 +65,4 @@ public class CustomerController {
         customerService.deleteCustomer(customerId);
     }
 
-    @PutMapping("/photo/{customerId}")
-    public ResponseEntity<CustomerResponse> updateCustomerPhoto(@PathVariable(name = "customerId") Long customerId,
-                                                                @RequestPart(value = "file") MultipartFile file) {
-        return new ResponseEntity<>(customerService.updateCustomerPhoto(customerId, file), HttpStatus.OK);
-    }
 }

@@ -2,6 +2,7 @@ package com.theam.crm.config.service;
 
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
+import io.minio.RemoveObjectArgs;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -25,21 +26,17 @@ public class MinioService {
     @Value("${minio.url}")
     String endpointUrl;
 
-//    @Value("${minio.default.folder}")
-//    String baseFolder;
-
     public String uploadFile(MultipartFile multipartFile) {
         String fileUrl = "";
         try {
             File file = convertMultiPartToFile(multipartFile);
             String fileName = generateFileName(multipartFile);
             fileUrl = endpointUrl + "/" + bucketName + "/" + fileName;
-            uploadFileToMinIOBucket(fileName, file, multipartFile);
+            uploadFileToMinIOBucket(fileName, multipartFile);
             file.delete();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        System.out.println("url: " + fileUrl);
         return fileUrl;
     }
 
@@ -52,46 +49,32 @@ public class MinioService {
     }
 
     private String generateFileName(MultipartFile multiPart) {
-        return new Date().getTime() + "-" + multiPart.getOriginalFilename().replace(" ", "_");
+        if (multiPart.getOriginalFilename() != null) {
+            return new Date().getTime() + "-" + multiPart.getOriginalFilename().replace(" ", "_");
+        }
+        return "";
     }
 
-    private void uploadFileToMinIOBucket(String fileName, File file, MultipartFile multipartFile) throws Exception {
-        minioClient.putObject(PutObjectArgs.builder()
-                .bucket(bucketName)
-                .object(fileName)
-                .stream(multipartFile.getInputStream(), multipartFile.getSize(), -1)
-                .build());
+    private void uploadFileToMinIOBucket(String fileName, MultipartFile multipartFile) {
+        try {
+            minioClient.putObject(PutObjectArgs.builder()
+                    .bucket(bucketName)
+                    .object(fileName)
+                    .stream(multipartFile.getInputStream(), multipartFile.getSize(), -1)
+                    .build());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
+    public void deleteFile(String filePath) {
+        try {
+            minioClient.removeObject(RemoveObjectArgs.builder()
+                    .bucket(bucketName)
+                    .object(filePath).build());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-//    public void uploadFile(String name, byte[] content) {
-//        File file = new File("/tmp/" + name);
-//        file.canWrite();
-//        file.canRead();
-//        try {
-//            FileOutputStream iofs = new FileOutputStream(file);
-//            iofs.write(content);
-//            minioClient.putObject(defaultBucketName, defaultBaseFolder + name, file.getAbsolutePath());
-//        } catch (Exception e) {
-//           throw new RuntimeException(e.getMessage());
-//        }
-//
-//    }
-//
-//    public byte[] getFile(String key) {
-//        try {
-//            InputStream obj = minioClient.getObject(defaultBucketName, defaultBaseFolder + "/" + key);
-//
-//            byte[] content = IOUtils.toByteArray(obj);
-//            obj.close();
-//            return content;
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        return null;
-//    }
-//
-//    @PostConstruct
-//    public void init() {
-//    }
 }

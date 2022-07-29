@@ -39,7 +39,6 @@ public class CustomerService {
 
     public CustomerResponse createCustomer(CustomerRequest customerRequest, MultipartFile multipartFile) {
 
-//        String photoId = amazonClient.uploadFile(multipartFile);
         String photoId = minioService.uploadFile(multipartFile);
 
         Customer customer = new Customer(customerRequest.getFirstName(),
@@ -65,16 +64,12 @@ public class CustomerService {
 
     }
 
-    public CustomerResponse updateCustomerPhoto(long customerId, MultipartFile multipartFile) {
-        Customer currentCustomer = CustomerResponse.fromCustomerResponse(getCustomerById(customerId));
-        String photoId = amazonClient.uploadFile(multipartFile);
-        currentCustomer.setPhotoUrl(photoId);
-        return CustomerResponse.toCustomerResponse(customerRepository.save(currentCustomer));
-    }
-
     public void deleteCustomer(Long id) {
-        if (customerRepository.existsById(id)) customerRepository.deleteById(id);
-        else throw new CustomerNotFoundException();
+        if (customerRepository.existsById(id)) {
+            Customer customer = CustomerResponse.fromCustomerResponse(getCustomerById(id));
+            minioService.deleteFile(customer.getPhotoUrl());
+            customerRepository.deleteById(id);
+        } else throw new CustomerNotFoundException();
     }
 
 }
