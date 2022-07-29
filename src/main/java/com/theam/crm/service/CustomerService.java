@@ -1,6 +1,5 @@
 package com.theam.crm.service;
 
-import com.theam.crm.config.AmazonClient;
 import com.theam.crm.config.service.MinioService;
 import com.theam.crm.exceptions.CustomerNotFoundException;
 import com.theam.crm.model.Customer;
@@ -21,8 +20,6 @@ import java.util.stream.Collectors;
 public class CustomerService {
 
     private final CustomerRepository customerRepository;
-
-    private final AmazonClient amazonClient;
 
     private final MinioService minioService;
 
