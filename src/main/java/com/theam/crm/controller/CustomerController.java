@@ -65,9 +65,4 @@ public class CustomerController {
         customerService.deleteCustomer(customerId);
     }
 
-    @PutMapping("/photo/{customerId}")
-    public ResponseEntity<CustomerResponse> updateCustomerPhoto(@PathVariable(name = "customerId") Long customerId,
-                                                                @RequestPart(value = "file") MultipartFile file) {
-        return new ResponseEntity<>(customerService.updateCustomerPhoto(customerId, file), HttpStatus.OK);
-    }
 }
